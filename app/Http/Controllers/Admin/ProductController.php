@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 // use Auth;
 
@@ -58,6 +59,16 @@ class ProductController extends Controller
         $product->name = $request->post('name');
         $product->price = $request->post('price');
         $product->description = $request->post('description');
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs(env('IMAGE_UPLOAD_PATH'), $filename, 'public'); // Menyimpan gambar ke penyimpanan publik
+            $product->image_url = asset(Storage::url($path)); // Membuat URL lengkap dan menyimpannya ke dalam atribut image_url
+        }
+
+
+
         $product->save();
 
         return redirect('admin/products')->with('succes', 'Produk Berhasil disimpan');
@@ -71,7 +82,8 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        $product = Product::findOrFail($id);
+        return view('admin.products.show', compact('product'));
     }
 
     /**
@@ -82,7 +94,8 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        $product = Product::findOrFail($id);
+        return view('admin.products.edit', compact('product'));
     }
 
     /**
@@ -94,7 +107,13 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $product = Product::findOrFail($id);
+        $product->name = $request->name;
+        $product->price = $request->price;
+        $product->description = $request->description;
+        $product->save();
+
+        return redirect('admin/products')->with('success', 'Produk berhasil diperbarui');
     }
 
     /**
@@ -103,8 +122,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        //
+        $product->delete();
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus.');
     }
 }

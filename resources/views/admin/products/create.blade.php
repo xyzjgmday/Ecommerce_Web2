@@ -20,7 +20,7 @@
             @endif
             <br />
 
-            <form action="{{ route ('admin.products.store') }}" method="POST">
+            <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf <!-- Ini adalah tag CSRF -->
                 <div class="form-group">
                     <label>Nama Produk</label>
@@ -32,7 +32,15 @@
                 </div>
                 <div class="form-group">
                     <label>Deskripsi</label>
-                    <textarea name="description" placeholder="Deskripsi" rows="3" class="form-control"></textarea>
+                    <textarea name="description" placeholder="Deskripsi" rows="5" class="form-control"></textarea>
+                    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+                    <script>
+                        CKEDITOR.replace('description');
+                    </script>
+                </div>
+                <div class="form-group">
+                    <label for="image">Gambar Produk</label>
+                    <input type="file" name="image_url" class="form-control-file" id="image">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
