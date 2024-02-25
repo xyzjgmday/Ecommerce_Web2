@@ -16,4 +16,14 @@ class Order extends Model
         'shipping_address',
         'zip_code'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany('App\Models\OrderItem');
+    }
 }
