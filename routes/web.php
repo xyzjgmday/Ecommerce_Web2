@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProductController as PublicProductController;
+use App\Http\Controllers\Admin\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,5 +45,6 @@ Route::prefix('carts')->name('carts.')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('products', ProductController::class);
 
-    Route::resource('orders', 'Admin\OrderController');
+    
+    Route::resource('orders', OrderController::class);
 });

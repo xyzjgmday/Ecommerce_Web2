@@ -4,10 +4,10 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col">
-                <h2>Menambahkan Almat</h2>
+                <h2>Menambahkan Alamat</h2>
 
                 <br/ >
-                @if(count($errorsendforeach
+                @if(count($errors))
                     <div class="form-group">
                         <div class="alert">
                             <ul>

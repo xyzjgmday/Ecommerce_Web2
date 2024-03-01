@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Auth;
 
 class OrderController extends Controller
@@ -23,7 +24,8 @@ class OrderController extends Controller
      */
     public function index()
     {
-        
+        $orders = Order::where('user_id', '=', Auth::user()->id)->get();
+        return view('admin.orders.index', compact('orders'));
     }
 
     /**
@@ -48,42 +50,45 @@ class OrderController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $this->validate(request(), [
-            'shipping_address' => 'required',
-            'zip_code' => 'required'
-        ]);
+{
+    $this->validate($request, [
+        'shipping_address' => 'required',
+        'zip_code' => 'required'
+    ]);
 
-        // Get Total Price
-        $cart = session()->get('cart');
-        $total_price = 0;
+    // Get Total Price
+    $cart = session()->get('cart');
+    $total_price = 0;
+
+    if (!empty($cart) && is_array($cart)) {
         foreach ($cart as $id => $product) {
-            $total_price += $product['price'] * $product['quantity'];
+            // Pastikan $product memiliki kunci 'price' dan 'quantity'
+            if (isset($product['price']) && isset($product['quantity'])) {
+                $total_price += $product['price'] * $product['quantity'];
+            }
         }
+    }
 
+    // Pastikan total_price lebih dari 0 sebelum menyimpan order
+    if ($total_price > 0) {
         $order = new Order();
         $order->user_id = Auth::user()->id;
         $order->status = 'Pending';
-        $order->shipping_address = $request->post('shipping_address');
-        $order-> zip_code = $request->post('zip_code');
-        $order-> total_price = $total_price;
+        $order->shipping_address = $request->input('shipping_address');
+        $order->zip_code = $request->input('zip_code');
+        $order->total_price = $total_price;
         $order->save();
 
-        // save order item
-        foreach ($cart as $id => $product) {
-            $orderItem = new OrderItem();
-            $orderItem->order_id = $order->id;
-            $orderItem->product_id = $id;
-            $orderItem->quantity = $product['quantity'];
-            $orderItem->price = $product['price'];
-            $orderItem->save();
-        }
-
-        // remove chart session
+        // Hapus session 'cart'
         session()->forget('cart');
 
-        return redirect('admin/orders/' . $order->id)->with('succes', 'Order berhasil di simpan');
+        return redirect('admin/orders/' . $order->id)->with('success', 'Order berhasil disimpan');
+    } else {
+        // Jika total_price tidak lebih dari 0, kembali ke halaman sebelumnya
+        return redirect()->back()->with('error', 'Tidak ada barang dalam keranjang belanja.');
     }
+}
+
 
     /**
      * Display the specified resource.
@@ -94,7 +99,7 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::find($id);
-        if (!order) {
+        if ($order) {
             return view('admin.orders.show', compact('order'));
         } else {
             return redirect('admin/orders')->with('errors', 'Order tidak ditemukan');

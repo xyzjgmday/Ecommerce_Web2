@@ -54,10 +54,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <a href="{{ url('/') }}" class="btn btn-warning"><i class="fa fa-angle-left"></i>Lanjutkan
-                            Belanja</a>
-                        <a href="javascript:;" class="btn btn-primary"><i class="fa fa-angle-left">Lanjut ke
-                                Pembayaran</i></a>
+                        <a href="{{ route('products.index') }}" class="btn btn-warning"><i class="fa fa-angle-left"></i>Lanjutkan Belanja</a>
+                        <a href="{{ route('admin.orders.create') }}" class="btn btn-primary"><i class="fa fa-angle-left">Lanjut ke Pembayaran</i></a>
                     </td>
                     <td colspan="2" class="hidden-xs"></td>
                     <td class="hidden-xs text-center"><strong>Total Rp.{{ $total }}</strong></td>

@@ -30,7 +30,7 @@
                         <span class="badge badge-primary">Harga Total</span>
                     </h2>
                     <p>
-                        {{ $oredr->total_price }}
+                        {{ $order->total_price }}
                     </p>
                 </div>
             </div>
